@@ -26,8 +26,11 @@ class H5Dataset(Dataset):
 
         #convert to numpy array
         with h5py.File(file_path, 'r') as hf:
-            image = hf["image"][()] #contains: a) native (T1) and b) post-contrast T1-weighted (T1Gd), c) T2-weighted (T2), and d) T2 Fluid Attenuated Inversion Recovery (T2-FLAIR) slice
-            mask = hf["mask"][()][:,:,0] #only take the the necrotic and non-enhancing tumor core (NCR/NET — label 1)
+            # contains: a) native (T1) and b) post-contrast T1-weighted (T1Gd), c) T2-weighted (T2), and d) T2 Fluid Attenuated Inversion Recovery (T2-FLAIR) slice
+            image = hf["image"][()].reshape(4,240,240)
+
+            # only take the necrotic and non-enhancing tumor core (NCR/NET — label 1)
+            mask = hf["mask"][()][:,:,0]
 
         return image, mask
 
