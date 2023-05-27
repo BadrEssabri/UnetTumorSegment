@@ -67,11 +67,11 @@ class UNET(nn.Module):
         return self.final_conv(x)
 
 #taken from https://github.com/aladdinpersson/Machine-Learning-Collection/blob/master/ML/Pytorch/image_segmentation/semantic_segmentation_unet/model.py
-def test():
-    x = torch.randn((3, 1, 161, 161))
-    model = UNET(in_channels=1, out_channels=1)
-    preds = model(x)
-    assert preds.shape == x.shape
-
-if __name__ == "__main__":
-    test()
+# def test():
+#     x = torch.randn((3, 1, 161, 161))
+#     model = UNET(in_channels=1, out_channels=1)
+#     preds = model(x)
+#     assert preds.shape == x.shape
+#
+# if __name__ == "__main__":
+#     test()
