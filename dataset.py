@@ -27,10 +27,10 @@ class H5Dataset(Dataset):
         #convert to numpy array
         with h5py.File(file_path, 'r') as hf:
             # contains: a) native (T1) and b) post-contrast T1-weighted (T1Gd), c) T2-weighted (T2), and d) T2 Fluid Attenuated Inversion Recovery (T2-FLAIR) slice
-            image = hf["image"][()].reshape(4,240,240)
+            image = torch.from_numpy(hf["image"][()]).permute(2,0,1)
 
             # only take the necrotic and non-enhancing tumor core (NCR/NET — label 1)
-            mask = hf["mask"][()][:,:,0]
+            mask = torch.from_numpy(hf["mask"][()][:,:,0])
 
         return image, mask
 
