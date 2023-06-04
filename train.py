@@ -17,7 +17,7 @@ from utils import (
 LEARNING_RATE = 1e-4
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(DEVICE)
-NUM_EPOCHS = 3
+NUM_EPOCHS = 20
 LOAD_MODEL = False
 
 
