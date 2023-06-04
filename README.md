@@ -8,16 +8,15 @@ sudo apt-get install python3.8
 (sudo) apt install python3-pip
 git clone
 pip install gdown
-gdown --id 11mUMdFPNT-05lC54Ru_2OwdwqTPV4jr
 ```
 2. Download dataset from Google Drive (train_brain and val_brain):
 ```
 pip install gdown
 cd UnetTumorSegment/data/train_brain
-gdown --id ..
+gdown https://drive.google.com/file/d/1_ePoCdcF6qOVp5SDPRffG7nwMLjvUaJm/view
 unzip -q train_brain.zip
 rm -rf train_brain.zip
-gdown --id ..
+gdown https://drive.google.com/file/d/13KCXTn1_fD9f-oLq9FIf5e8LeaUgJjot/view
 unzip -q val_brain.zip
 rm -rf val_brain.zip
 
