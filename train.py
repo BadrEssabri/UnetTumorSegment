@@ -44,7 +44,7 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
 
 
 def main():
-    model = UNET(in_channels=4, out_channels=1).to(DEVICE)
+    model = UNET(in_channels=4, out_channels=1, features=[32, 64, 128, 256]).to(DEVICE)
     loss_fn = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
