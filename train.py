@@ -77,7 +77,7 @@ def main():
     if LOAD_MODEL:
         load_checkpoint(torch.load("unet_tumor_weight.pth.tar"), model)
 
-    val_loss = check_accuracy(val_loader, model, device=DEVICE)
+    val_loss = check_accuracy(val_loader, model, loss_fn, device=DEVICE)
     scaler = torch.cuda.amp.GradScaler()
 
     early_stopper = EarlyStopper(patience=3, min_delta=0)
@@ -93,7 +93,7 @@ def main():
         save_checkpoint(checkpoint,filename="unet_tumor_weight.pth.tar")
 
         # check accuracy
-        val_loss = check_accuracy(val_loader, model,loss_fn, device=DEVICE)
+        val_loss = check_accuracy(val_loader, model, loss_fn, device=DEVICE)
 
         if early_stopper.early_stop(val_loss):
             break
