@@ -6,6 +6,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
 from model import UNET
+import numpy as np
 from utils import (
     load_checkpoint,
     save_checkpoint,
@@ -43,6 +44,24 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
         loop.set_postfix(loss=loss.item())
 
 
+class EarlyStopper:
+    def __init__(self, patience=1, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_validation_loss = np.inf
+
+    def early_stop(self, validation_loss):
+        if validation_loss < self.min_validation_loss:
+            self.min_validation_loss = validation_loss
+            self.counter = 0
+        elif validation_loss > (self.min_validation_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
+
+
 def main():
     model = UNET(in_channels=4, out_channels=1, features=[32, 64, 128, 256]).to(DEVICE)
     loss_fn = nn.BCEWithLogitsLoss()
@@ -58,8 +77,10 @@ def main():
     if LOAD_MODEL:
         load_checkpoint(torch.load("unet_tumor_weight.pth.tar"), model)
 
-    check_accuracy(val_loader, model, device=DEVICE)
+    val_loss = check_accuracy(val_loader, model, device=DEVICE)
     scaler = torch.cuda.amp.GradScaler()
+
+    early_stopper = EarlyStopper(patience=3, min_delta=0)
 
     for epoch in range(NUM_EPOCHS):
         train_fn(train_loader, model, optimizer, loss_fn, scaler)
@@ -72,8 +93,10 @@ def main():
         save_checkpoint(checkpoint,filename="unet_tumor_weight.pth.tar")
 
         # check accuracy
-        check_accuracy(val_loader, model, device=DEVICE)
+        val_loss = check_accuracy(val_loader, model,loss_fn, device=DEVICE)
 
+        if early_stopper.early_stop(val_loss):
+            break
         # # print some examples to a folder
         # save_predictions_as_imgs(
         #     val_loader, model, folder="saved_images/", device=DEVICE
