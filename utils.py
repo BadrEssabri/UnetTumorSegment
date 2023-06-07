@@ -11,22 +11,19 @@ def load_checkpoint(checkpoint, model):
     model.load_state_dict(checkpoint["state_dict"])
 
 
-def check_accuracy(loader, model,loss_fn ,device="cuda"):
+def check_accuracy(loader, model, device="cuda"):
     num_correct = 0
     num_pixels = 0
     dice_score = 0
     model.double()
     model.eval()
 
-    val_loss = 0
+
     with torch.no_grad():
         for x, y in tqdm(loader):
             x = x.to(device)
             y = y.to(device).unsqueeze(1)
-            preds = model(x)
-            loss = loss_fn(preds, y)
-            val_loss += loss.item()
-            preds = torch.sigmoid(preds)
+            preds = torch.sigmoid(model(x))
             preds = (preds > 0.5).float()
             num_correct += (preds == y).sum()
             num_pixels += torch.numel(preds)
@@ -39,7 +36,6 @@ def check_accuracy(loader, model,loss_fn ,device="cuda"):
     )
     print(f"Dice score: {dice_score/len(loader)}")
     model.train()
-    return val_loss
 
 def save_predictions_as_imgs(
     loader, model, folder="saved_images/", device="cuda"
