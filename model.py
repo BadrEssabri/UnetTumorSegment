@@ -66,6 +66,29 @@ class UNET(nn.Module):
 
         return self.final_conv(x)
 
+
+class DiceLoss(nn.Module):
+    """Calculate dice loss."""
+
+    def __init__(self, eps: float = 1e-9):
+        super(DiceLoss, self).__init__()
+        self.eps = eps
+
+    def forward(self,
+                logits: torch.Tensor,
+                targets: torch.Tensor) -> torch.Tensor:
+        num = targets.size(0)
+        probability = torch.sigmoid(logits)
+        probability = probability.view(num, -1)
+        targets = targets.view(num, -1)
+        assert (probability.shape == targets.shape)
+
+        intersection = 2.0 * (probability * targets).sum()
+        union = probability.sum() + targets.sum()
+        dice_score = (intersection + self.eps) / union
+        # print("intersection", intersection, union, dice_score)
+        return 1.0 - dice_score
+
 #taken from https://github.com/aladdinpersson/Machine-Learning-Collection/blob/master/ML/Pytorch/image_segmentation/semantic_segmentation_unet/model.py
 # def test():
 #     x = torch.randn((3, 1, 161, 161))

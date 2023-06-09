@@ -20,6 +20,11 @@ class H5Dataset(Dataset):
     def __len__(self):
         return len(self.file_list)
 
+    def normalize(self, data: np.ndarray):
+        data_min = np.min(data)
+        # normalization = (each element - min element) / ( max - min )
+        return (data - data_min) / (np.max(data) - data_min)
+
     def __getitem__(self, idx):
         file_name = self.file_list[idx]
         file_path = os.path.join(self.folder_path, file_name)
@@ -27,9 +32,12 @@ class H5Dataset(Dataset):
         #convert to numpy array
         with h5py.File(file_path, 'r') as hf:
             # contains: a) native (T1) and b) post-contrast T1-weighted (T1Gd), c) T2-weighted (T2), and d) T2 Fluid Attenuated Inversion Recovery (T2-FLAIR) slice
-            image = torch.from_numpy(hf["image"][()]).permute(2,0,1)
+            image = np.transpose(hf["image"][()], axes=(2, 0, 1))
+            image = torch.from_numpy(self.normalize(image))
+            #image = torch.from_numpy(hf["image"][()]).permute(2,0,1)
 
             # only take the necrotic and non-enhancing tumor core (NCR/NET — label 1)
+            # mask = hf["mask"][()][:,:,0]
             mask = torch.from_numpy(hf["mask"][()][:,:,0])
 
         return image, mask
