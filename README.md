@@ -2,38 +2,41 @@
 
 ## setup vm
 # Download model and data
-1. Clone github repo (maybe setup ssh keys, dont know what already is installed)
+1. Download cuda and set the sourcing in the bashrc
 ```
-sudo apt-get install python3.8
-(sudo) apt install python3-pip
-git clone
-pip install gdown
+https://developer.nvidia.com/cuda-11-7-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=20.04&target_type=deb_local
+export PATH="/usr/local/cuda-12.1/bin:$PATH"
+nvcc --version
+sudo prime-select nvidia
+prime-select query
 ```
-2. Download dataset from Google Drive (train_brain and val_brain):
+2. clone github repo (setup ssh keys):
+```
+connect the ssh keys
+git clone git@github.com:BadrEssabri/UnetTumorSegment.git
+```
+2. Download required packages:
+dont use pip install -r requirements.txt
+```
+pip install torch torchvision torchaudio
+pip install h5py matplotlib tqdm 
+
+```
+3. Download dataset from Google Drive (train_brain and val_brain):
 ```
 pip install gdown
 cd UnetTumorSegment/data/train_brain
-gdown https://drive.google.com/file/d/1_ePoCdcF6qOVp5SDPRffG7nwMLjvUaJm/view
-unzip -q train_brain.zip
+gdown --id 1_ePoCdcF6qOVp5SDPRffG7nwMLjvUaJm
+unzip train_brain.zip
 rm -rf train_brain.zip
-gdown https://drive.google.com/file/d/13KCXTn1_fD9f-oLq9FIf5e8LeaUgJjot/view
-unzip -q val_brain.zip
+gdown --id 13KCXTn1_fD9f-oLq9FIf5e8LeaUgJjot
+unzip val_brain.zip
 rm -rf val_brain.zip
 
 ```
-# Setup CUDA
-1. Check CUDA version on the top right of the given output (probably 11.6)
-```
-nvidia-smi
-```
-2. Setup torch to use this version of cuda (this could be different for other cuda versions, see https://discuss.pytorch.org/t/problem-with-cuda-11-6-installation/156119)
-```
-pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
-pip install -r requirements.txt
-```
 # Test the program
 1. Check all the paths in the python program
-2. Run the program (if correct conda environment is activated)
+2. Run the program 
 ```
 python3 ./train.py
 ```
@@ -63,8 +66,3 @@ cat outputfile.txt
 
 # Download results
 If the program is finished, download the results (weights of the model)
-1. ZIP the output folder (if line is not working, delete -q)
-```commandline
-zip -r -q weights.zip ....
-```
-2. Download the results.zip from the VM
