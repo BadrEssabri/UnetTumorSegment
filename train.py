@@ -48,7 +48,7 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
 def main():
     model = UNET(in_channels=4, out_channels=1).to(DEVICE)
     # loss_fn = nn.BCEWithLogitsLoss()
-    loss_fn = DiceLoss
+    loss_fn = DiceLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     folder_path_train = './data/train_brain'
