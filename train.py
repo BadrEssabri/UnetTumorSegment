@@ -5,6 +5,8 @@ import torch
 from tqdm import tqdm
 import torch.nn as nn
 import torch.optim as optim
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 from model import UNET
 from utils import (
     load_checkpoint,
@@ -44,7 +46,29 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
 
 
 def main():
-    model = UNET(in_channels=4, out_channels=1, features=[32, 64, 128, 256]).to(DEVICE)
+    train_transform = A.Compose(
+        [
+            A.Normalize(
+                mean=[0.0, 0.0, 0.0],
+                std=[1.0, 1.0, 1.0],
+                max_pixel_value=255.0,
+            ),
+            ToTensorV2(),
+        ],
+    )
+
+    val_transforms = A.Compose(
+        [
+            A.Normalize(
+                mean=[0.0, 0.0, 0.0],
+                std=[1.0, 1.0, 1.0],
+                max_pixel_value=255.0,
+            ),
+            ToTensorV2(),
+        ],
+    )
+
+    model = UNET(in_channels=4, out_channels=1).to(DEVICE)
     loss_fn = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
