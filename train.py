@@ -17,7 +17,7 @@ from utils import (
 
 # Hyperparameters etc.
 LEARNING_RATE = 1e-4
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(DEVICE)
 NUM_EPOCHS = 20
 LOAD_MODEL = False
@@ -46,8 +46,14 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
 
 
 def main():
-    model = UNET(in_channels=4, out_channels=1).to(DEVICE)
-    # loss_fn = nn.BCEWithLogitsLoss()
+    
+    model = UNET(in_channels=4, out_channels=1)
+
+    if torch.cuda.device_count() > 1:
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
+    model.to(DEVICE)
+
     loss_fn = DiceLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 

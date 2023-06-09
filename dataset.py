@@ -22,8 +22,11 @@ class H5Dataset(Dataset):
 
     def normalize(self, data: np.ndarray):
         data_min = np.min(data)
-        # normalization = (each element - min element) / ( max - min )
-        return (data - data_min) / (np.max(data) - data_min)
+        data_max = np.max(data)
+        if data_max - data_min == 0:
+            return data - data_min
+        else:
+            return (data - data_min) / (data_max - data_min)
 
     def __getitem__(self, idx):
         file_name = self.file_list[idx]
