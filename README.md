@@ -5,7 +5,7 @@
 1. Download cuda and set the sourcing in the bashrc
 ```
 https://developer.nvidia.com/cuda-11-7-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=20.04&target_type=deb_local
-export PATH="/usr/local/cuda-12.1/bin:$PATH"
+export PATH="/usr/local/cuda-XX.X/bin:$PATH"
 nvcc --version
 sudo prime-select nvidia
 prime-select query
